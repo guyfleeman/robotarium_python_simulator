@@ -8,12 +8,12 @@ from rps.robotarium_abc import *
 
 class Robotarium(RobotariumABC):
 
-        def __init__(self, number_of_agents=10, show_figure=True, save_data=True, update_time=1):
+        def __init__(self, number_of_agents=10, show_figure=True, save_data=True, update_time=9):
             super().__init__(number_of_agents, show_figure, save_data)
-
+		
             #Initialize some rendering variables
-            self.previous_render_time = time.time()
-            self.update_time = update_time
+            self.previous_render_time = time.time() * 1000.0
+            self.update_time = float(update_time)
 
         def call_at_scripts_end(self):
             """Call this function at the end of scripts to write data.  Even if you
@@ -50,7 +50,9 @@ class Robotarium(RobotariumABC):
 
             # Update graphics
             if(self.show_figure):
-                t = time.time()
+                t = (time.time() * 1000.0)
+                print('TEST STRING')
+                print(f'{time.time()}')
                 if((t - self.previous_render_time) > self.update_time):
                     for i in range(self.number_of_agents):
                         self.circle_patches[i].center = self.poses[:2, i]
