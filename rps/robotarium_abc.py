@@ -2,6 +2,7 @@ import time
 from abc import ABC, abstractmethod
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.lines as lines
@@ -65,6 +66,12 @@ class RobotariumABC(ABC):
 
             plt.ion()
             plt.show()
+
+
+    def close_figure(self):
+        self.figure.canvas.flush_events()
+        plt.close('all')
+
 
     def set_velocities(self, ids, velocities):
 

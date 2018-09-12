@@ -10,6 +10,7 @@ import os
 from os.path import abspath
 from os.path import dirname
 from os.path import isabs
+from os.path import isfile
 from os.path import join
 from os.path import split
 
@@ -17,7 +18,12 @@ import sys
 from sys import argv
 
 class ProgramLoader:
-	def __init__(self, module_file, start=None):
+	def __init__(self, logger):
+		self.logger = logger
+
+	def load_module(self, module_file, start=None):
+		self.logger.debug('loading %s', module_file)
+
 		# if a start location is not given, start from the director
 		# containing the file with the program entry point
 		if start is None:
@@ -43,13 +49,28 @@ class ProgramLoader:
 		# add the path containing the module to ensure it can be found and loaded
 		sys.path.append(module_path)
 
+		self.logger.debug('added %s to the system path', module_path)
+
 		# generate a ModuleSpec from the path, and then load the module using the spec
+		if not isfile(module_path_name):
+			self.logger.critical('module does not exist: %s', module_path_name)
+			return False
+
 		spec = spec_from_file_location(module_name, module_path_name)
+
+		if spec is None:
+			self.logger.critical('%s not loadable at %s', module_name, module_path_name)
+			return False
+
 		module = module_from_spec(spec)
 		spec.loader.exec_module(module)
 
+		self.logger.debug('successfully loaded module %s', module_name)
+
 		# add the module to system module for later import
 		sys.modules[module_name] = module
+
+		self.logger.debug('added module to system modules for runtime import')
 
 		# store classes defined by this module in a list
 		# (imported modules are also returned by inspection, so we need to discard them)
@@ -59,8 +80,12 @@ class ProgramLoader:
 			if clazz[1].__module__ == module_name:
 				self._classes_defined_by_module.append(clazz)
 
+		self.logger.debug('found the following classes defined by the module: %s', self._classes_defined_by_module)
 
-	def load(self, required_ancestor=None):
+		return True
+
+
+	def get_program_candidates(self, required_ancestor=None):
 		# no ancestry filter, return everything
 		if not required_ancestor:
 			return self._classes_defined_by_module

@@ -10,7 +10,7 @@ import numpy as np
 class GoToPose(DrivenRobotariumProgram):
 	
 	def __init__(self):
-
+		super().__init__()
 		print("Creating GoToPose")
 
 	def sim_setup(self):
@@ -19,10 +19,10 @@ class GoToPose(DrivenRobotariumProgram):
 	def sim_pre(self, poses):
 		print("Pre")
 
-	def sim_step(self, poses):
+	def sim_step(self, poses, step_delta, step_skew):
 		print("Step")
 
-		return True
+		return False
 
 	def sim_post(self, poses):
 		print("Post")

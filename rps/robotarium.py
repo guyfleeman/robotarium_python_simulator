@@ -16,6 +16,8 @@ class Robotarium(RobotariumABC):
             self.update_time = float(update_time)
 
         def call_at_scripts_end(self):
+            self.close_figure()
+
             """Call this function at the end of scripts to write data.  Even if you
             don't write any data, calling this function at the end of your script will
             accelerate execution on the server.

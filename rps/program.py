@@ -1,4 +1,8 @@
+from rps.utilities.misc import generate_initial_conditions
+
 from abc import ABC, abstractmethod
+
+import numpy as np
 
 default_rt_properties = {
 	'interval': (1.0 / 60.0),
@@ -11,9 +15,11 @@ class DrivenRobotariumProgram(ABC):
 	def __init__(self):
 		# set number of agents
 		self.num_agents = 0
-		
+		self.velocities = np.zeros((3, self.num_agents))
+
 		# establish runtime
 		self.rt_prop = default_rt_properties
+
 
 	# sets the number of agents to be used
 	def set_num_agents(self, num_agents):
@@ -21,7 +27,7 @@ class DrivenRobotariumProgram(ABC):
 
 
 	# gets the current number of allocated agents
-	def get_num_agents(self, num_agents):
+	def get_num_agents(self):
 		return self.num_agents
 
 	
@@ -34,14 +40,22 @@ class DrivenRobotariumProgram(ABC):
 
 
 	def set_velocities(self, velocities, robot_IDs=None):
-		if robot_IDs == None:
-			robot_IDs = np.arange(self.get_num_agents())
+#		if robot_IDs == None:
+#			robot_IDs = np.arange(self.get_num_agents())
 
 		self.velocities = velocities
 
-
+	
 	def get_velocities(self):
 		return self.velocities
+
+
+	def set_logger(self, logger):
+		self.logger = logger
+
+
+	def get_logger(self):
+		return self._logger
 
 
 	@abstractmethod	
@@ -55,7 +69,7 @@ class DrivenRobotariumProgram(ABC):
 
 
 	@abstractmethod
-	def sim_step(self, poses):
+	def sim_step(self, poses, step_delta, step_skew):
 		pass
 
 
